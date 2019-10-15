@@ -5,12 +5,16 @@ import datetime
 
 
 def sha256_squared(string):
+    # a function that hashes a string using the SHA256 squared algorithm
+
     first_hash = hashlib.sha256(string.encode()).digest()
     second_hash = hashlib.sha256(first_hash).digest()
     return second_hash
 
 
 def find_nonce(block, start_nonce, d):
+    # finds a nonce for which the hash of the string has at least d leading zeros
+
     nonce = start_nonce
 
     found = 0
@@ -32,6 +36,8 @@ def find_nonce(block, start_nonce, d):
 
 
 def thread(name, conn, start_nonce, max_nonce, block, d):
+    # the work done by a thread
+
     time_start = datetime.datetime.now()
     print("%s: Thread %d: starting" % (time_start, name))
     nonce = find_nonce(block, start_nonce, d)
@@ -47,20 +53,24 @@ def thread(name, conn, start_nonce, max_nonce, block, d):
 if __name__ == "__main__":
 
     block = 123
-    nonce = 0
     max_nonce = 4294967296
     threads_num = cpu_count()
-    d = 32
+    d = 22
 
     final_nonce = 0
 
+    # a division per thread of all the possible nonces
     nonce_thread = max_nonce // threads_num
 
+    # list which will hold the threads
     threads = list()
+
+    # used for two-way communication between main and the working threads
     parent_conn, child_conn = Pipe()
 
     for index in range(threads_num):
 
+        # the largest nonce a thread can try
         max_nonce_thread = max_nonce
         if index != (threads_num - 1):
             max_nonce_thread = nonce_thread * (index + 1) - 1
@@ -68,13 +78,16 @@ if __name__ == "__main__":
         time = datetime.datetime.now()
         print("%s: Main: Create and start Thread %d" % (time, index))
 
+        # initialisation of a process
         x = Process(target=thread, args=(
             index, child_conn, nonce_thread * index, max_nonce_thread, block, d))
 
         threads.append(x)
         threads[index].start()
 
+    # it waits for a thread to send a nonce through the pipe
     final_nonce = parent_conn.recv()
+    # terminate all the threads
     for index in range(threads_num):
         threads[index].terminate()
 
