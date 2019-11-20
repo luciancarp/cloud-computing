@@ -1,5 +1,4 @@
 import hashlib
-import logging
 from multiprocessing import Process, Pipe, Value, cpu_count
 import datetime
 
@@ -55,7 +54,7 @@ if __name__ == "__main__":
     block = 123
     max_nonce = 4294967296
     threads_num = cpu_count()
-    d = 22
+    d = 25
 
     final_nonce = 0
 
