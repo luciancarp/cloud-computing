@@ -7,7 +7,7 @@ def sha256_squared(string):
     # a function that hashes a string using the SHA256 squared algorithm
 
     first_hash = hashlib.sha256(string.encode()).digest()
-    second_hash = hashlib.s~ha256(first_hash).digest()
+    second_hash = hashlib.sha256(first_hash).digest()
     return second_hash
 
 
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     block = 123
     max_nonce = 4294967296
     threads_num = cpu_count()
-    d = 25
+    d = 20
 
     final_nonce = 0
 
