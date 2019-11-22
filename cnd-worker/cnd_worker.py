@@ -1,6 +1,7 @@
 import hashlib
 from multiprocessing import Process, Pipe, Value, cpu_count
 import datetime
+import boto3
 
 
 def sha256_squared(string):
