@@ -55,7 +55,7 @@ if __name__ == "__main__":
     block = 123
     max_nonce = 4294967296
     threads_num = cpu_count()
-    d = 20
+    d = 10
 
     final_nonce = 0
 
@@ -101,3 +101,4 @@ if __name__ == "__main__":
 
     # Create a new message
     response = queue.send_message(MessageBody="{}".format(final_nonce))
+    print("d is ", d)

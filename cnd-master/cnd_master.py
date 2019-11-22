@@ -116,8 +116,9 @@ if __name__ == "__main__":
         }
     }
 
-    v1.create_namespaced_pod(body=pod_manifest,
-                             namespace='default')
+    pod = v1.create_namespaced_pod(body=pod_manifest,
+                                   namespace='default')
+    print("Created Pod {}".format(pod.metadata.name))
 
     while True:
         messages = queue.receive_messages()
@@ -125,6 +126,8 @@ if __name__ == "__main__":
             print('Final nonce: ', messages[0].body)
             break
         else:
+            print("No message")
             time.sleep(2)
 
-    v1.delete_namespaced_pod(name=name, namespace='default')
+    response = v1.delete_namespaced_pod(name=name, namespace='default')
+    print("Delete pod response: {}".format(response))
