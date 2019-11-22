@@ -74,6 +74,11 @@ if __name__ == "__main__":
 
     ###
 
+    for queue in sqs.queues.all():
+        print(queue.url)
+
+    ###
+
     config.load_kube_config()
     v1 = client.CoreV1Api()
     print("Listing pods with their IPs:")
