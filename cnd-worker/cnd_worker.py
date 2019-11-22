@@ -94,7 +94,7 @@ if __name__ == "__main__":
     print('Final nonce: ', final_nonce)
 
     # Get the service resource
-    sqs = boto3.resource('sqs')
+    sqs = boto3.resource('sqs', , region_name='eu-west-1')
 
     # Get the queue
     queue = sqs.get_queue_by_name(QueueName='cnd')
