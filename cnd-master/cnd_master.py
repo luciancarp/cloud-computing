@@ -1,5 +1,6 @@
 import uuid
 import boto3
+import time
 from kubernetes import client, config
 
 # s3_client = boto3.client('s3')
@@ -65,7 +66,7 @@ if __name__ == "__main__":
     sqs = boto3.resource('sqs')
 
     # Create the queue. This returns an SQS.Queue instance
-    queue = sqs.create_queue(QueueName='test', Attributes={
+    queue = sqs.create_queue(QueueName='cnd', Attributes={
                              'DelaySeconds': '5'})
 
     # You can now access identifiers and attributes
@@ -78,21 +79,52 @@ if __name__ == "__main__":
         print(queue.url)
 
     # Get the queue
-    queue = sqs.get_queue_by_name(QueueName='test')
+    queue = sqs.get_queue_by_name(QueueName='cnd')
 
     # Create a new message
-    response = queue.send_message(MessageBody='world')
+    # response = queue.send_message(MessageBody='world')
 
     # The response is NOT a resource, but gives you a message ID and MD5
-    print(response.get('MessageId'))
-    print(response.get('MD5OfMessageBody'))
+    # print(response.get('MessageId'))
+    # print(response.get('MD5OfMessageBody'))
 
     ###
 
     config.load_kube_config()
+
     v1 = client.CoreV1Api()
+
     print("Listing pods with their IPs:")
     ret = v1.list_pod_for_all_namespaces(watch=False)
     for i in ret.items:
         print("%s\t%s\t%s" %
               (i.status.pod_ip, i.metadata.namespace, i.metadata.name))
+
+    name = 'cnd-worker-pod'
+
+    pod_manifest = {
+        'apiVersion': 'v1',
+        'kind': 'Pod',
+        'metadata': {
+            'name': name
+        },
+        'spec': {
+            'containers': [{
+                'image': 'luciancarp/cnd-worker:latest',
+                'name': 'cnd-worker'
+            }]
+        }
+    }
+
+    v1.create_namespaced_pod(body=pod_manifest,
+                             namespace='default')
+
+    while True:
+        messages = queue.receive_messages()
+        if len(messages) > 0:
+            print('Final nonce: ', messages[0].body)
+            break
+        else:
+            time.sleep(2)
+
+    v1.delete_namespaced_pod(name=name, namespace='default')

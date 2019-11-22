@@ -92,3 +92,12 @@ if __name__ == "__main__":
         threads[index].terminate()
 
     print('Final nonce: ', final_nonce)
+
+    # Get the service resource
+    sqs = boto3.resource('sqs')
+
+    # Get the queue
+    queue = sqs.get_queue_by_name(QueueName='cnd')
+
+    # Create a new message
+    response = queue.send_message(MessageBody="{}".format(final_nonce))
