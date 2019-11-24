@@ -111,8 +111,8 @@ if __name__ == "__main__":
                 if id == process_id:
                     found_nonce = 1
                     print('Final nonce: ', message.body)
-            time = time.time()
-            if found_nonce == 1 or (time - time_start) > max_time:
+            time_now = time.time()
+            if found_nonce == 1 or (time_now - time_start) > max_time:
                 break
         else:
             print("No message")
