@@ -62,29 +62,29 @@ if __name__ == "__main__":
                     'image': 'luciancarp/cnd-worker:latest',
                     'name': 'cnd-worker',
                     'env': [
-                            {
-                                'name': 'POD_NAME',
-                                'value': {
+                        {
+                            'name': 'POD_NAME',
+                            'value': {
                                     'fieldRef': {'fieldPath': 'metadata.name'}
-                                }
-                            },
+                            }
+                        },
                         {
-                                'name': 'WORKER_INDEX',
-                                'value': {
+                            'name': 'WORKER_INDEX',
+                            'value': {
                                     'fieldRef': {'fieldPath': 'metadata.worker_index'}
-                                }
+                            }
                         },
                         {
-                                'name': 'WORKER_MAX',
-                                'value': {
+                            'name': 'WORKER_MAX',
+                            'value': {
                                     'fieldRef': {'fieldPath': 'metadata.worker_max'}
-                                }
+                            }
                         },
                         {
-                                'name': 'D',
-                                'value': {
+                            'name': 'D',
+                            'value': {
                                     'fieldRef': {'fieldPath': 'metadata.d'}
-                                }
+                            }
                         }
                     ]
                 }]
