@@ -26,6 +26,8 @@ if __name__ == "__main__":
     # id of the process
     id = str(uuid.uuid4())
 
+    max_time = 600
+
     # get arguments
     pods_count = args.pod_count
     d = args.d
@@ -95,6 +97,8 @@ if __name__ == "__main__":
 
         list_created_pods_names.append(pod.metadata.name)
 
+    time_start = time.time()
+
     # look for nonce messages, breaks at the first nonce received
     while True:
         messages = queue.receive_messages(MessageAttributeNames=['process_id'])
@@ -107,7 +111,8 @@ if __name__ == "__main__":
                 if id == process_id:
                     found_nonce = 1
                     print('Final nonce: ', message.body)
-            if found_nonce == 1:
+            time = time.time()
+            if found_nonce == 1 or (time - time_start) > max_time:
                 break
         else:
             print("No message")
