@@ -48,7 +48,7 @@ if __name__ == "__main__":
     if len(messages) > 0:
         entries = []
         for message in messages:
-            entries.append({'Id': message['Id'],
+            entries.append({'Id': messages.index(message),
                             'ReceiptHandle': message['ReceiptHandle']})
         queue.delete_messages(Entries=entries)
 
