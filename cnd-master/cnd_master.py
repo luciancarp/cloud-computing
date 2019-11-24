@@ -52,7 +52,7 @@ if __name__ == "__main__":
             'apiVersion': 'v1',
             'kind': 'Pod',
             'metadata': {
-                'name': name,
+                'generateName': name,
                 'worker_index': str(index_pod),
                 'worker_max': str(pods_count),
                 'd': str(d)
