@@ -69,10 +69,10 @@ if __name__ == "__main__":
     final_nonce = 0
 
     # has default value if no env var given
-    d = os.getenv('D', 20)
+    d = int(os.getenv('D', '20'))
 
-    worker_index = os.getenv('WORKER_INDEX', 0)
-    worker_max = os.getenv('WORKER_MAX', 1)
+    worker_index = int(os.getenv('WORKER_INDEX', '0'))
+    worker_max = int(os.getenv('WORKER_MAX', '1'))
 
     # nonce range that this worker will work on
     start_nonce_worker, max_nonce_worker = get_nonce_range(
