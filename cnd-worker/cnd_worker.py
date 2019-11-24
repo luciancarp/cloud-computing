@@ -114,5 +114,10 @@ if __name__ == "__main__":
     queue = sqs.get_queue_by_name(QueueName='cnd')
 
     # Create a new message
-    response = queue.send_message(MessageBody="{}".format(final_nonce))
+    response = queue.send_message(MessageBody="{}".format(final_nonce), MessageAttributes={
+        'process_id': {
+            'StringValue': os.getenv('PROCESS_ID', '0'),
+            'DataType': 'String'
+        }}
+    )
     print("d is ", d)

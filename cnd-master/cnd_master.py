@@ -23,6 +23,8 @@ parser.add_argument(
 args = parser.parse_args()
 
 if __name__ == "__main__":
+    # id of the process
+    id = str(uuid.uuid4())
 
     # get arguments
     pods_count = args.pod_count
@@ -54,7 +56,8 @@ if __name__ == "__main__":
                 'generateName': name,
                 'worker_index': str(index_pod),
                 'worker_max': str(pods_count),
-                'd': str(d)
+                'd': str(d),
+                'process_id': id
             },
             'spec': {
                 'containers': [{
@@ -76,6 +79,10 @@ if __name__ == "__main__":
                         {
                             'name': 'D',
                             'value': 'metadata.d'
+                        },
+                        {
+                            'name': 'PROCESS_ID',
+                            'value': 'metadata.process_id'
                         }
                     ]
                 }]
@@ -90,10 +97,18 @@ if __name__ == "__main__":
 
     # look for nonce messages, breaks at the first nonce received
     while True:
-        messages = queue.receive_messages()
+        messages = queue.receive_messages(MessageAttributeNames=['process_id'])
         if len(messages) > 0:
-            print('Final nonce: ', messages[0].body)
-            break
+            found_nonce = 0
+            for message in messages:
+                process_id = message.message_attributes.get(
+                    'process_id').get('StringValue')
+                # check if the message comes from this process
+                if id == process_id:
+                    found_nonce = 1
+                    print('Final nonce: ', message.body)
+            if found_nonce == 1:
+                break
         else:
             print("No message")
             time.sleep(2)
@@ -109,11 +124,11 @@ if __name__ == "__main__":
               (i.status.pod_ip, i.metadata.namespace, i.metadata.name))
 
     # Check if messages in queue and delete them
-    messages = queue.receive_messages()
-    if len(messages) > 0:
-        entries = []
-        for message in messages:
-            entries.append({'Id': str(messages.index(message)),
-                            'ReceiptHandle': message.receipt_handle})
-        response = queue.delete_messages(Entries=entries)
-        print(response)
+    # messages = queue.receive_messages()
+    # if len(messages) > 0:
+    #     entries = []
+    #     for message in messages:
+    #         entries.append({'Id': str(messages.index(message)),
+    #                         'ReceiptHandle': message.receipt_handle})
+    #     response = queue.delete_messages(Entries=entries)
+    #     print(response)
