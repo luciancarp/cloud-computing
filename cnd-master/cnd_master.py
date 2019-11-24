@@ -29,7 +29,7 @@ if __name__ == "__main__":
     d = args.d
 
     # Get the service resource
-    sqs = boto3.resource('sqs')
+    sqs = boto3.resource('sqs', region_name='eu-west-1')
 
     # get queue
     queue = sqs.get_queue_by_name(QueueName='cnd')
