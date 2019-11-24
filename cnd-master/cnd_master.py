@@ -113,6 +113,7 @@ if __name__ == "__main__":
                     print('Final nonce: ', message.body)
             time_now = time.time()
             if found_nonce == 1 or (time_now - time_start) > max_time:
+                print("Time: {} seconds".format(time_now - time_start))
                 break
         else:
             print("No message")
