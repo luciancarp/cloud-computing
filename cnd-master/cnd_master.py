@@ -43,6 +43,13 @@ if __name__ == "__main__":
 
     list_created_pods_names = []
 
+    # Check if messages in queue and delete them
+    messages = queue.receive_messages()
+    if len(messages) > 0:
+        for message in messages:
+            sqs.delete_message(QueueUrl=queue.url,
+                               ReceiptHandle=message['ReceiptHandle'])
+
     for index_pod in range(pods_count):
 
         name = "cnd-worker-pod-{}".format(index_pod)
