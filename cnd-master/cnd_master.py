@@ -46,7 +46,6 @@ if __name__ == "__main__":
     for index_pod in range(pods_count):
 
         name = "cnd-worker-pod-{}".format(index_pod)
-        list_created_pods_names.append(name)
 
         pod_manifest = {
             'apiVersion': 'v1',
@@ -64,27 +63,19 @@ if __name__ == "__main__":
                     'env': [
                         {
                             'name': 'POD_NAME',
-                            'value': {
-                                    'fieldRef': {'fieldPath': 'metadata.name'}
-                            }
+                            'value': 'metadata.name'
                         },
                         {
                             'name': 'WORKER_INDEX',
-                            'value': {
-                                    'fieldRef': {'fieldPath': 'metadata.worker_index'}
-                            }
+                            'value': 'metadata.worker_index'
                         },
                         {
                             'name': 'WORKER_MAX',
-                            'value': {
-                                    'fieldRef': {'fieldPath': 'metadata.worker_max'}
-                            }
+                            'value': 'metadata.worker_max'
                         },
                         {
                             'name': 'D',
-                            'value': {
-                                    'fieldRef': {'fieldPath': 'metadata.d'}
-                            }
+                            'value': 'metadata.d'
                         }
                     ]
                 }]
@@ -94,6 +85,8 @@ if __name__ == "__main__":
         pod = v1.create_namespaced_pod(body=pod_manifest,
                                        namespace='default')
         print("Created Pod {}".format(pod.metadata.name))
+
+        list_created_pods_names.append(pod.metadata.name)
 
     # look for nonce messages, breaks at the first nonce received
     while True:
