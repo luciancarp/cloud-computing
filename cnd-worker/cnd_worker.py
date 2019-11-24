@@ -2,6 +2,7 @@ import hashlib
 from multiprocessing import Process, Pipe, Value, cpu_count
 import datetime
 import boto3
+import os
 
 
 def sha256_squared(string):
@@ -50,17 +51,32 @@ def thread(name, conn, start_nonce, max_nonce, block, d):
         conn.send(nonce)
 
 
+def get_nonce_range(index, divisions, start_nonce, max_nonce):
+    nonce_division = (max_nonce - start_nonce) // divisions
+    max_nonce_range = max_nonce
+    if index != (divisions - 1):
+        max_nonce_range = nonce_division * (index + 1) - 1 + start_nonce
+
+    start_nonce_range = nonce_division * index + start_nonce
+    return start_nonce_range, max_nonce_range
+
+
 if __name__ == "__main__":
 
-    block = 123
+    block = 'COMSM0010cloud'
     max_nonce = 4294967296
     threads_num = cpu_count()
-    d = 10
-
     final_nonce = 0
 
-    # a division per thread of all the possible nonces
-    nonce_thread = max_nonce // threads_num
+    # has default value if no env var given
+    d = os.getenv('D', 20)
+
+    worker_index = os.getenv('WORKER_INDEX', 0)
+    worker_max = os.getenv('WORKER_MAX', 1)
+
+    # nonce range that this worker will work on
+    start_nonce_worker, max_nonce_worker = get_nonce_range(
+        worker_index, worker_max, 0, max_nonce)
 
     # list which will hold the threads
     threads = list()
@@ -70,17 +86,15 @@ if __name__ == "__main__":
 
     for index in range(threads_num):
 
-        # the largest nonce a thread can try
-        max_nonce_thread = max_nonce
-        if index != (threads_num - 1):
-            max_nonce_thread = nonce_thread * (index + 1) - 1
+        start_nonce_thread, max_nonce_thread = get_nonce_range(
+            index, threads_num, start_nonce_worker, max_nonce_worker)
 
         time = datetime.datetime.now()
         print("%s: Main: Create and start Thread %d" % (time, index))
 
         # initialisation of a process
         x = Process(target=thread, args=(
-            index, child_conn, nonce_thread * index, max_nonce_thread, block, d))
+            index, child_conn, start_nonce_thread, max_nonce_thread, block, d))
 
         threads.append(x)
         threads[index].start()
