@@ -68,23 +68,23 @@ if __name__ == "__main__":
                     'env': [
                         {
                             'name': 'POD_NAME',
-                            'value': 'metadata.name'
+                            'value': name
                         },
                         {
                             'name': 'WORKER_INDEX',
-                            'value': 'metadata.worker_index'
+                            'value': str(index_pod)
                         },
                         {
                             'name': 'WORKER_MAX',
-                            'value': 'metadata.worker_max'
+                            'value': str(pods_count)
                         },
                         {
                             'name': 'D',
-                            'value': 'metadata.d'
+                            'value': str(d)
                         },
                         {
                             'name': 'PROCESS_ID',
-                            'value': 'metadata.process_id'
+                            'value': id
                         }
                     ]
                 }]
