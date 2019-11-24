@@ -46,9 +46,11 @@ if __name__ == "__main__":
     # Check if messages in queue and delete them
     messages = queue.receive_messages()
     if len(messages) > 0:
+        entries = []
         for message in messages:
-            sqs.delete_message(QueueUrl=queue.url,
-                               ReceiptHandle=message['ReceiptHandle'])
+            entries.append({'Id': message['Id'],
+                            'ReceiptHandle': message['ReceiptHandle']})
+        queue.delete_messages(Entries=entries)
 
     for index_pod in range(pods_count):
 
