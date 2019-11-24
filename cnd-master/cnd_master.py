@@ -49,7 +49,7 @@ if __name__ == "__main__":
         entries = []
         for message in messages:
             entries.append({'Id': messages.index(message),
-                            'ReceiptHandle': message['ReceiptHandle']})
+                            'ReceiptHandle': message.receipt_handle})
         queue.delete_messages(Entries=entries)
 
     for index_pod in range(pods_count):
