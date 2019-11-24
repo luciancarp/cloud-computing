@@ -52,7 +52,10 @@ if __name__ == "__main__":
             'apiVersion': 'v1',
             'kind': 'Pod',
             'metadata': {
-                'name': name
+                'name': name,
+                'worker_index': str(index_pod),
+                'worker_max': str(pods_count),
+                'd': str(d)
             },
             'spec': {
                 'containers': [{
@@ -67,15 +70,21 @@ if __name__ == "__main__":
                             },
                         {
                                 'name': 'WORKER_INDEX',
-                                'value': str(index_pod)
+                                'value': {
+                                    'fieldRef': {'fieldPath': 'metadata.worker_index'}
+                                }
                         },
                         {
                                 'name': 'WORKER_MAX',
-                                'value': str(pods_count)
+                                'value': {
+                                    'fieldRef': {'fieldPath': 'metadata.worker_max'}
+                                }
                         },
                         {
                                 'name': 'D',
-                                'value': str(d)
+                                'value': {
+                                    'fieldRef': {'fieldPath': 'metadata.d'}
+                                }
                         }
                     ]
                 }]
