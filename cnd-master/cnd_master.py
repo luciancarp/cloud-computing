@@ -43,15 +43,6 @@ if __name__ == "__main__":
 
     list_created_pods_names = []
 
-    # Check if messages in queue and delete them
-    messages = queue.receive_messages()
-    if len(messages) > 0:
-        entries = []
-        for message in messages:
-            entries.append({'Id': str(messages.index(message)),
-                            'ReceiptHandle': message.receipt_handle})
-        queue.delete_messages(Entries=entries)
-
     for index_pod in range(pods_count):
 
         name = "cnd-worker-pod-{}".format(index_pod)
@@ -116,3 +107,13 @@ if __name__ == "__main__":
     for i in ret.items:
         print("%s\t%s\t%s" %
               (i.status.pod_ip, i.metadata.namespace, i.metadata.name))
+
+    # Check if messages in queue and delete them
+    messages = queue.receive_messages()
+    if len(messages) > 0:
+        entries = []
+        for message in messages:
+            entries.append({'Id': str(messages.index(message)),
+                            'ReceiptHandle': message.receipt_handle})
+        response = queue.delete_messages(Entries=entries)
+        print(response)
