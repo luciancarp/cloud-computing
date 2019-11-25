@@ -111,7 +111,7 @@ if __name__ == "__main__":
 
         list_created_pods_names.append(pod.metadata.name)
 
-    time_start = time.time()
+    time_start = datetime.datetime.now()
 
     # look for nonce messages, breaks at the first nonce received
     while True:
