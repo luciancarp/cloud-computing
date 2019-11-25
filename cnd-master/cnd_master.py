@@ -1,6 +1,5 @@
 import uuid
 import boto3
-import time
 import datetime
 from kubernetes import client, config
 
@@ -26,6 +25,9 @@ args = parser.parse_args()
 if __name__ == "__main__":
     # id of the process
     id = str(uuid.uuid4())
+
+    time = datetime.datetime.now()
+    print("%s: Main: Begin process %s" % (time, id))
 
     max_time = 600
 
@@ -114,28 +116,43 @@ if __name__ == "__main__":
     # look for nonce messages, breaks at the first nonce received
     while True:
         time = datetime.datetime.now()
-        print("%s: Main: Check SQS Queue: %s" % (time, queue.queue_name))
+        print("%s: Main: Check SQS Queue: %s" % (time, queue.url))
         messages = queue.receive_messages(MessageAttributeNames=['process_id'])
         if len(messages) > 0:
             found_nonce = 0
+
             for message in messages:
                 process_id = message.message_attributes.get(
                     'process_id').get('StringValue')
+
+                time = datetime.datetime.now()
+
                 # check if the message comes from this process
                 if id == process_id:
                     found_nonce = 1
                     print('Final nonce: ', message.body)
-            time_now = time.time()
-            if found_nonce == 1 or (time_now - time_start) > max_time:
-                print("Time: {} seconds".format(time_now - time_start))
+
+                time_elapsed = time - time_start
+
+            if found_nonce == 1:
+                print("%s: Main: Golden Nonce found: %s" %
+                      (time, message.body))
+                print("%s: Main: Time Elapsed: %s seconds" %
+                      (time, time - time_start))
                 break
+            if time_elapsed > max_time:
+                print("%s: Main: Time Elapsed: %s seconds" %
+                      (time, time - time_start))
+                print("%s: Main: Process %s: Timed Out" %
+                      (time, id))
         else:
             print("No message")
             time.sleep(2)
 
     # delete pods
     for pod_name in list_created_pods_names:
-        v1.delete_namespaced_pod(name=pod_name, namespace='default')
+        response = v1.delete_namespaced_pod(name=pod_name, namespace='default')
+        print(response)
 
     print("Listing pods with their IPs:")
     ret = v1.list_pod_for_all_namespaces(watch=False)
