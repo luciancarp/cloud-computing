@@ -1,7 +1,7 @@
 import uuid
 import boto3
 import datetime
-import time
+import time as t
 from kubernetes import client, config
 
 import argparse
@@ -117,62 +117,43 @@ if __name__ == "__main__":
     time_start = datetime.datetime.now()
 
     # look for nonce messages, breaks at the first nonce received
-    # while True:
-    #     time = datetime.datetime.now()
-    #     print("%s: Main: Check SQS Queue: %s" % (time, queue.url))
-    #     messages = queue.receive_messages(MessageAttributeNames=['process_id'])
-    #     if len(messages) > 0:
-    #         found_nonce = 0
-    #         for message in messages:
-    #             process_id = message.message_attributes.get(
-    #                 'process_id').get('StringValue')
-    #             time = datetime.datetime.now()
-    #             time_elapsed = time - time_start
-    #             # check if the message comes from this process
-    #             if id == process_id:
-    #                 found_nonce = 1
-    #                 nonce = message.body
-
-    #             message.delete()
-
-    #         if found_nonce == 1:
-    #             print("%s: Main: Golden Nonce found: %s" %
-    #                   (time, nonce))
-    #             print("%s: Main: Time Elapsed: %s seconds" %
-    #                   (time, time_elapsed))
-    #             break
-
-    #         if time_elapsed.total_seconds() > max_time:
-    #             print("%s: Main: Time Elapsed: %s seconds" %
-    #                   (time, time - time_start))
-    #             print("%s: Main: Process %s: Timed Out" %
-    #                   (time, id))
-    #             break
-
-    #     time = datetime.datetime.now()
-    #     print("%s: Main: Golden Nonce not found for process %s" %
-    #           (time, id))
-    #     t.sleep(2)
-    time_start_t = datetime.datetime.now()
-
     while True:
+        time = datetime.datetime.now()
+        # print("%s: Main: Check SQS Queue: %s" % (time, queue.url))
         messages = queue.receive_messages(MessageAttributeNames=['process_id'])
         if len(messages) > 0:
             found_nonce = 0
             for message in messages:
                 process_id = message.message_attributes.get(
                     'process_id').get('StringValue')
+                time = datetime.datetime.now()
+                time_elapsed = time - time_start
+                print(process_id)
                 # check if the message comes from this process
                 if id == process_id:
                     found_nonce = 1
-                    print('Final nonce: ', message.body)
-            time_now_t = time.time()
-            if found_nonce == 1 or (time_now_t - time_start_t) > max_time:
-                print("Time: {} seconds".format(time_now_t - time_start_t))
+                    nonce = message.body
+
+                message.delete()
+
+            if found_nonce == 1:
+                print("%s: Main: Golden Nonce found: %s" %
+                      (time, nonce))
+                print("%s: Main: Time Elapsed: %s seconds" %
+                      (time, time_elapsed))
                 break
-        else:
-            print("No message")
-            time.sleep(2)
+
+            if time_elapsed.total_seconds() > max_time:
+                print("%s: Main: Time Elapsed: %s seconds" %
+                      (time, time - time_start))
+                print("%s: Main: Process %s: Timed Out" %
+                      (time, id))
+                break
+
+        time = datetime.datetime.now()
+        # print("%s: Main: Golden Nonce not found for process %s" %
+        #       (time, id))
+        t.sleep(2)
 
     # delete pods
     for pod_name in list_created_pods_names:
