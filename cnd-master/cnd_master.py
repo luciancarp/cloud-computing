@@ -65,6 +65,16 @@ if __name__ == "__main__":
                 'containers': [{
                     'image': 'luciancarp/cnd-worker:latest',
                     'name': 'cnd-worker',
+                    'resources': {
+                        'requests': {
+                            'cpu': '500m',
+                            'memory': '400Mi'
+                        },
+                        'limits': {
+                            'cpu': '1000m',
+                            'memory': '1000Mi'
+                        }
+                    },
                     'env': [
                         {
                             'name': 'POD_NAME',
