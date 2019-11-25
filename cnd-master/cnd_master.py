@@ -1,6 +1,7 @@
 import uuid
 import boto3
 import datetime
+import time as t
 from kubernetes import client, config
 
 import argparse
@@ -147,7 +148,7 @@ if __name__ == "__main__":
                       (time, id))
         else:
             print("No message")
-            time.sleep(2)
+            t.sleep(2)
 
     # delete pods
     for pod_name in list_created_pods_names:
