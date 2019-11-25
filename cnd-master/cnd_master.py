@@ -30,7 +30,7 @@ if __name__ == "__main__":
     time_elapsed = 0
 
     time = datetime.datetime.now()
-    print("%s: Main: Begin process %s" % (time, id))
+    print("%s: Begin process %s" % (time, id))
 
     max_time = 600
 
@@ -110,7 +110,7 @@ if __name__ == "__main__":
         pod = v1.create_namespaced_pod(body=pod_manifest,
                                        namespace='default')
         time = datetime.datetime.now()
-        print("%s: Main: Create Pod %s" % (time, pod.metadata.name))
+        print("%s: Create Pod %s" % (time, pod.metadata.name))
 
         list_created_pods_names.append(pod.metadata.name)
 
@@ -119,7 +119,7 @@ if __name__ == "__main__":
     # look for nonce messages, breaks at the first nonce received
     while True:
         time = datetime.datetime.now()
-        print("%s: Main: Check SQS Queue: %s" % (time, queue.url))
+        print("%s: Check SQS Queue: %s" % (time, queue.url))
         messages = queue.receive_messages(MessageAttributeNames=['process_id'])
         if len(messages) > 0:
             found_nonce = 0
@@ -128,7 +128,7 @@ if __name__ == "__main__":
                     'process_id').get('StringValue')
                 time = datetime.datetime.now()
                 time_elapsed = time - time_start
-                print(process_id)
+
                 # check if the message comes from this process
                 if id == process_id:
                     found_nonce = 1
@@ -137,33 +137,33 @@ if __name__ == "__main__":
                 message.delete()
 
             if found_nonce == 1:
-                print("%s: Main: Golden Nonce found: %s" %
+                print("%s: Golden Nonce found: %s" %
                       (time, nonce))
-                print("%s: Main: Time Elapsed: %s seconds" %
+                print("%s: Time Elapsed: %s seconds" %
                       (time, time_elapsed))
                 break
 
             if time_elapsed.total_seconds() > max_time:
-                print("%s: Main: Time Elapsed: %s seconds" %
+                print("%s: Time Elapsed: %s seconds" %
                       (time, time - time_start))
-                print("%s: Main: Process %s: Timed Out" %
+                print("%s: Process %s: Timed Out" %
                       (time, id))
                 break
 
         else:
             time = datetime.datetime.now()
-            print("%s: Main: Golden Nonce not found for process %s" %
+            print("%s: Golden Nonce not found for process %s" %
                   (time, id))
             t.sleep(2)
 
     # delete pods
     for pod_name in list_created_pods_names:
         time = datetime.datetime.now()
-        print("%s: Main: Delete Pod %s" % (time, pod_name))
+        print("%s: Delete Pod %s" % (time, pod_name))
         v1.delete_namespaced_pod(name=pod_name, namespace='default')
 
     time = datetime.datetime.now()
-    print("%s: Main: End process %s" % (time, id))
+    print("%s: End process %s" % (time, id))
 
     if nonce != '':
         print("Results: Golden Nonce: %s" % (nonce))
