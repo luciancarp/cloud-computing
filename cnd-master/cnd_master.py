@@ -123,20 +123,15 @@ if __name__ == "__main__":
         messages = queue.receive_messages(MessageAttributeNames=['process_id'])
         if len(messages) > 0:
             found_nonce = 0
-
             for message in messages:
                 process_id = message.message_attributes.get(
                     'process_id').get('StringValue')
-
                 time = datetime.datetime.now()
                 time_elapsed = time - time_start
-
                 # check if the message comes from this process
                 if id == process_id:
                     found_nonce = 1
                     nonce = message.body
-                    break
-
                 message.delete()
 
             if found_nonce == 1:
