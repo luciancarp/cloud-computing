@@ -86,12 +86,7 @@ if __name__ == "__main__":
                             'name': 'PROCESS_ID',
                             'value': id
                         }
-                    ],
-                    'resources': {
-                        'requests': {
-                            'cpu': '500m'
-                        }
-                    }
+                    ]
                 }]
             }
         }
