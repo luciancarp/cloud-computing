@@ -114,7 +114,7 @@ if __name__ == "__main__":
     # look for nonce messages, breaks at the first nonce received
     while True:
         time = datetime.datetime.now()
-        print("%s: Main: Check SQS Queue: %s" % (time, queue.name))
+        print("%s: Main: Check SQS Queue: %s" % (time, queue.queue_name))
         messages = queue.receive_messages(MessageAttributeNames=['process_id'])
         if len(messages) > 0:
             found_nonce = 0
