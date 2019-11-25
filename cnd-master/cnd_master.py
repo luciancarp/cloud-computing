@@ -129,13 +129,15 @@ if __name__ == "__main__":
                     'process_id').get('StringValue')
 
                 time = datetime.datetime.now()
+                time_elapsed = time - time_start
 
                 # check if the message comes from this process
                 if id == process_id:
                     found_nonce = 1
                     nonce = message.body
+                    break
 
-                time_elapsed = time - time_start
+                message.delete()
 
             if found_nonce == 1:
                 print("%s: Main: Golden Nonce found: %s" %
