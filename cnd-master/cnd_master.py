@@ -119,7 +119,7 @@ if __name__ == "__main__":
     # look for nonce messages, breaks at the first nonce received
     while True:
         time = datetime.datetime.now()
-        # print("%s: Main: Check SQS Queue: %s" % (time, queue.url))
+        print("%s: Main: Check SQS Queue: %s" % (time, queue.url))
         messages = queue.receive_messages(MessageAttributeNames=['process_id'])
         if len(messages) > 0:
             found_nonce = 0
@@ -150,10 +150,11 @@ if __name__ == "__main__":
                       (time, id))
                 break
 
-        time = datetime.datetime.now()
-        # print("%s: Main: Golden Nonce not found for process %s" %
-        #       (time, id))
-        t.sleep(2)
+        else:
+            time = datetime.datetime.now()
+            print("%s: Main: Golden Nonce not found for process %s" %
+                  (time, id))
+            t.sleep(2)
 
     # delete pods
     for pod_name in list_created_pods_names:
