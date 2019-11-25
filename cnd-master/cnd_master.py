@@ -153,6 +153,8 @@ if __name__ == "__main__":
     #     print("%s: Main: Golden Nonce not found for process %s" %
     #           (time, id))
     #     t.sleep(2)
+    time_start_t = datetime.datetime.now()
+
     while True:
         messages = queue.receive_messages(MessageAttributeNames=['process_id'])
         if len(messages) > 0:
@@ -164,9 +166,9 @@ if __name__ == "__main__":
                 if id == process_id:
                     found_nonce = 1
                     print('Final nonce: ', message.body)
-            time_now = time.time()
-            if found_nonce == 1 or (time_now - time_start) > max_time:
-                print("Time: {} seconds".format(time_now - time_start))
+            time_now_t = time.time()
+            if found_nonce == 1 or (time_now_t - time_start_t) > max_time:
+                print("Time: {} seconds".format(time_now_t - time_start_t))
                 break
         else:
             print("No message")
