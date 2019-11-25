@@ -1,6 +1,7 @@
 import uuid
 import boto3
 import time
+import datetime
 from kubernetes import client, config
 
 import argparse
@@ -103,7 +104,8 @@ if __name__ == "__main__":
 
         pod = v1.create_namespaced_pod(body=pod_manifest,
                                        namespace='default')
-        print("Created Pod {}".format(pod.metadata.name))
+        time = datetime.datetime.now()
+        print("%s: Main: Create Pod %s" % (time, pod.metadata.name))
 
         list_created_pods_names.append(pod.metadata.name)
 
@@ -111,6 +113,8 @@ if __name__ == "__main__":
 
     # look for nonce messages, breaks at the first nonce received
     while True:
+        time = datetime.datetime.now()
+        print("%s: Main: Check SQS Queue: %s" % (time, queue.name))
         messages = queue.receive_messages(MessageAttributeNames=['process_id'])
         if len(messages) > 0:
             found_nonce = 0
