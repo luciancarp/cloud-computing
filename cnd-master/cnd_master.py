@@ -26,6 +26,8 @@ args = parser.parse_args()
 if __name__ == "__main__":
     # id of the process
     id = str(uuid.uuid4())
+    nonce = ''
+    time_elapsed = 0
 
     time = datetime.datetime.now()
     print("%s: Main: Begin process %s" % (time, id))
@@ -131,42 +133,38 @@ if __name__ == "__main__":
                 # check if the message comes from this process
                 if id == process_id:
                     found_nonce = 1
-                    print('Final nonce: ', message.body)
+                    nonce = message.body
 
                 time_elapsed = time - time_start
 
             if found_nonce == 1:
                 print("%s: Main: Golden Nonce found: %s" %
-                      (time, message.body))
+                      (time, nonce))
                 print("%s: Main: Time Elapsed: %s seconds" %
-                      (time, time - time_start))
+                      (time, time_elapsed))
                 break
+
             if time_elapsed.total_seconds() > max_time:
                 print("%s: Main: Time Elapsed: %s seconds" %
                       (time, time - time_start))
                 print("%s: Main: Process %s: Timed Out" %
                       (time, id))
-        else:
-            print("No message")
-            t.sleep(2)
+                break
+
+        time = datetime.datetime.now()
+        print("%s: Main: Golden Nonce not found for process %s" %
+              (time, id))
+        t.sleep(2)
 
     # delete pods
     for pod_name in list_created_pods_names:
-        response = v1.delete_namespaced_pod(name=pod_name, namespace='default')
-        print(response)
+        time = datetime.datetime.now()
+        print("%s: Main: Delete Pod %s" % (time, pod_name))
+        v1.delete_namespaced_pod(name=pod_name, namespace='default')
 
-    print("Listing pods with their IPs:")
-    ret = v1.list_pod_for_all_namespaces(watch=False)
-    for i in ret.items:
-        print("%s\t%s\t%s" %
-              (i.status.pod_ip, i.metadata.namespace, i.metadata.name))
+    time = datetime.datetime.now()
+    print("%s: Main: End process %s" % (time, id))
 
-    # Check if messages in queue and delete them
-    # messages = queue.receive_messages()
-    # if len(messages) > 0:
-    #     entries = []
-    #     for message in messages:
-    #         entries.append({'Id': str(messages.index(message)),
-    #                         'ReceiptHandle': message.receipt_handle})
-    #     response = queue.delete_messages(Entries=entries)
-    #     print(response)
+    if nonce != '':
+        print("Results: Golden Nonce: %s" % (nonce))
+        print("Results: Time Elapsed: %s seconds" % (time_elapsed))
