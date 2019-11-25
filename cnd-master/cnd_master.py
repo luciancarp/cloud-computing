@@ -140,7 +140,7 @@ if __name__ == "__main__":
                 print("%s: Main: Time Elapsed: %s seconds" %
                       (time, time - time_start))
                 break
-            if time_elapsed > max_time:
+            if time_elapsed.total_seconds() > max_time:
                 print("%s: Main: Time Elapsed: %s seconds" %
                       (time, time - time_start))
                 print("%s: Main: Process %s: Timed Out" %
