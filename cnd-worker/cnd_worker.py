@@ -121,7 +121,7 @@ if __name__ == "__main__":
             'DataType': 'String'
         },
         'time_elapsed_pod': {
-            'StringValue': time_elapsed,
+            'StringValue': str(time_elapsed),
             'DataType': 'String'
         },
         'pod_name': {
