@@ -27,6 +27,7 @@ def find_nonce(block, start_nonce, d):
         for i in range(d):
             if (hash[i // 8] >> (i % 8)) & 1 == 1:
                 has_leading_zeros = 0
+                break
 
         if has_leading_zeros == 1:
             found = 1
