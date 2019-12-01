@@ -28,6 +28,8 @@ if __name__ == "__main__":
     id = str(uuid.uuid4())
     nonce = ''
     time_elapsed = 0
+    time_elapsed_pod = ''
+    pod_name = ''
 
     time = datetime.datetime.now()
     print("%s: Begin process %s" % (time, id))
@@ -133,18 +135,22 @@ if __name__ == "__main__":
                 if id == process_id:
                     found_nonce = 1
                     nonce = message.body
+                    time_elapsed_pod = message.message_attributes.get(
+                        'time_elapsed_pod').get('StringValue')
+                    pod_name = message.message_attributes.get(
+                        'pod_name').get('StringValue')
 
                 message.delete()
 
             if found_nonce == 1:
                 print("%s: Golden Nonce found: %s" %
                       (time, nonce))
-                print("%s: Time Elapsed: %s seconds" %
+                print("%s: Time Elapsed: %s" %
                       (time, time_elapsed))
                 break
 
             if time_elapsed.total_seconds() > max_time:
-                print("%s: Time Elapsed: %s seconds" %
+                print("%s: Time Elapsed: %s" %
                       (time, time - time_start))
                 print("%s: Process %s: Timed Out" %
                       (time, id))
@@ -167,4 +173,6 @@ if __name__ == "__main__":
 
     if nonce != '':
         print("Results: Golden Nonce: %s" % (nonce))
-        print("Results: Time Elapsed: %s seconds" % (time_elapsed))
+        print("Results: Found by pod: %s" % (pod_name))
+        print("Results: Time Elapsed pod: %s" % (time_elapsed_pod))
+        print("Results: Time Elapsed until received result: %s" % (time_elapsed))

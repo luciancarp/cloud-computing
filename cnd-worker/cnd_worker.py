@@ -46,9 +46,10 @@ def thread(name, conn, start_nonce, max_nonce, block, d):
         time_end = datetime.datetime.now()
         print("%s: Thread %d: found nonce: %d" % (time_end, name, nonce))
         print("%s: Thread %d: finishing" % (time_end, name))
+        time_elapsed_thread = time_end - time_start
         print("%s: Thread %d: Time Elapsed: %s" %
-              (time_end, name, time_end - time_start))
-        conn.send(nonce)
+              (time_end, name, time_elapsed_thread))
+        conn.send((nonce, time_elapsed_thread))
 
 
 def get_nonce_range(index, divisions, start_nonce, max_nonce):
@@ -100,13 +101,13 @@ if __name__ == "__main__":
         threads[index].start()
 
     # it waits for a thread to send a nonce through the pipe
-    final_nonce = parent_conn.recv()
+    (final_nonce, time_elapsed) = parent_conn.recv()
     # terminate all the threads
     for index in range(threads_num):
         threads[index].terminate()
 
     print('Final nonce: ', final_nonce)
-
+    print('Time Elapsed: ', time_elapsed)
     # Get the service resource
     sqs = boto3.resource('sqs', region_name='eu-west-1')
 
@@ -118,6 +119,15 @@ if __name__ == "__main__":
         'process_id': {
             'StringValue': os.getenv('PROCESS_ID', '0'),
             'DataType': 'String'
-        }}
+        },
+        'time_elapsed_pod': {
+            'StringValue': time_elapsed,
+            'DataType': 'String'
+        },
+        'pod_name': {
+            'StringValue': os.getenv('POD_NAME', worker_index),
+            'DataType': 'String'
+        }
+    }
     )
     print("d is ", d)
