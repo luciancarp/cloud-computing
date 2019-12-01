@@ -122,7 +122,8 @@ if __name__ == "__main__":
     while True:
         time = datetime.datetime.now()
         print("%s: Check SQS Queue: %s" % (time, queue.url))
-        messages = queue.receive_messages(MessageAttributeNames=['process_id'])
+        messages = queue.receive_messages(
+            MessageAttributeNames=['process_id', 'time_elapsed_pod', 'pod_name'])
         if len(messages) > 0:
             found_nonce = 0
             for message in messages:
