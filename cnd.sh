@@ -10,11 +10,9 @@ read pods_num
 
 cd ~/.ssh
 
-ssh -tt -i "cloud-computing.pem" ubuntu@ec2-34-242-38-144.eu-west-1.compute.amazonaws.com << EOF
+ssh -tt -i "cloud-computing.pem" ubuntu@ec2-34-255-207-253.eu-west-1.compute.amazonaws.com << EOF
 
     sudo su -
-
-    ssh -i id_rsa admin@34.242.85.154
 
     cd cloud-computing/
 
